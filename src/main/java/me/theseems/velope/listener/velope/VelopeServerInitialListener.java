@@ -22,6 +22,11 @@ public class VelopeServerInitialListener {
 
     @Subscribe
     public void onInitialPick(PlayerChooseInitialServerEvent event) {
+        if (ConnectionUtils.isForcedHost(event.getPlayer())) {
+            velope.getLogger().info("Found forced host for " + event.getPlayer().getUsername() + ", skipping...");
+            return;
+        }
+        
         RegisteredServer server = ConnectionUtils.findNearestAvailable(
                 velope.getProxyServer(),
                 event.getPlayer().getUniqueId(),

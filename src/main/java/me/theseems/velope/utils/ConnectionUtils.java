@@ -11,10 +11,8 @@ import me.theseems.velope.server.VelopedServerRepository;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 public class ConnectionUtils {
     public static void connectAndSupervise(ProxyServer proxyServer, Player player, VelopedServer velopedServer) {
@@ -129,5 +127,23 @@ public class ConnectionUtils {
                 .getOptimalServer(velopedServer, excluded, playerUUID)
                 .flatMap(serverInfo -> proxyServer.getServer(serverInfo.getName()))
                 .orElse(null);
+    }
+    
+    /**
+     * Gets all forced hosts configured in velocity's config
+     * @return A map of forced hosts to a list of their target servers
+     */
+    public static Map<String, List<String>> getForcedHosts() {
+        return Velope.getInstance().getProxyServer().getConfiguration().getForcedHosts();
+    }
+    
+    /**
+     * Checks if the player is joining from a forced host
+     * @param player The player to check
+     * @return True if the player is joining from a forced host, false otherwise
+     */
+    public static boolean isForcedHost(Player player) {
+        Optional<InetSocketAddress> address = player.getVirtualHost();
+        return address.filter(inetSocketAddress -> getForcedHosts().containsKey(inetSocketAddress.getHostString())).isPresent();
     }
 }
